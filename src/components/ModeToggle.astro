@@ -1,0 +1,115 @@
+---
+import { profiles } from '../config';
+---
+
+<div class="toggle" role="group" aria-label="Choose which side of the site to show">
+  <span class="indicator" aria-hidden="true"></span>
+  <button type="button" data-set-mode="professional" aria-pressed="true">
+    <span aria-hidden="true">⚙</span>
+    {profiles.professional.label}
+  </button>
+  <button type="button" data-set-mode="personal" aria-pressed="false">
+    <span aria-hidden="true">✦</span>
+    {profiles.personal.label}
+  </button>
+</div>
+
+<script>
+  import { MODES, type Mode } from '../config';
+
+  function apply(mode: Mode, animate: boolean) {
+    const root = document.documentElement;
+    if (root.dataset.mode === mode && animate) return;
+    root.dataset.mode = mode;
+
+    document.querySelectorAll<HTMLButtonElement>('[data-set-mode]').forEach((btn) => {
+      btn.setAttribute('aria-pressed', String(btn.dataset.setMode === mode));
+    });
+
+    try {
+      localStorage.setItem('mode', mode);
+    } catch {}
+
+    // Keep the URL shareable: ?mode=personal
+    const u = new URL(location.href);
+    u.searchParams.set('mode', mode);
+    history.replaceState(null, '', u);
+
+    if (animate) {
+      document.querySelectorAll<HTMLElement>('[data-fade]').forEach((el) => {
+        el.classList.remove('mode-fade');
+        void el.offsetWidth; // restart the animation
+        el.classList.add('mode-fade');
+      });
+    }
+  }
+
+  // Sync button state with whatever the head script picked.
+  const current = document.documentElement.dataset.mode as Mode;
+  if (MODES.includes(current)) apply(current, false);
+
+  document.querySelectorAll<HTMLButtonElement>('[data-set-mode]').forEach((btn) => {
+    btn.addEventListener('click', () => apply(btn.dataset.setMode as Mode, true));
+  });
+</script>
+
+<style>
+  .toggle {
+    position: relative;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding: 3px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--card);
+    font-family: var(--sans);
+    transition: background-color 0.35s, border-color 0.35s;
+  }
+
+  .indicator {
+    position: absolute;
+    top: 3px;
+    bottom: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    border-radius: 999px;
+    background: var(--accent-soft);
+    transition: transform 0.35s var(--ease), background-color 0.35s;
+  }
+
+  :global(html[data-mode='personal']) .indicator {
+    transform: translateX(100%);
+  }
+
+  button {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 6px 14px;
+    border: 0;
+    background: none;
+    color: var(--muted);
+    font: inherit;
+    font-size: 14px;
+    font-weight: 500;
+    border-radius: 999px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.2s;
+  }
+
+  button:hover,
+  button[aria-pressed='true'] {
+    color: var(--accent);
+  }
+
+  @media (max-width: 420px) {
+    button {
+      padding: 6px 10px;
+      font-size: 13px;
+    }
+  }
+</style>

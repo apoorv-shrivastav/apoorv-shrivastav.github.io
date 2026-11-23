@@ -1,0 +1,136 @@
+---
+import { render, type CollectionEntry } from 'astro:content';
+import Base from '../../layouts/Base.astro';
+import { profiles } from '../../config';
+import { getPosts, url, readingTime, formatDate } from '../../lib/utils';
+
+export async function getStaticPaths() {
+  const posts = await getPosts();
+  return posts.map((post) => ({ params: { id: post.id }, props: { post } }));
+}
+
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+
+const { post } = Astro.props;
+const { Content } = await render(post);
+const { title, description, date, mode } = post.data;
+---
+
+<Base title={title} description={description}>
+  <!-- Opening a post switches the site to that post's side. -->
+  <script is:inline define:vars={{ mode }}>
+    document.documentElement.dataset.mode = mode;
+    try { localStorage.setItem('mode', mode); } catch (e) {}
+  </script>
+
+  <article>
+    <a class="back" href={url(`blog/?mode=${mode}`)}>← {profiles[mode].writingTitle}</a>
+    <h1>{title}</h1>
+    <p class="meta">
+      <time datetime={date.toISOString()}>{formatDate(date)}</time>
+      <span>·</span>
+      {readingTime(post.body)} read
+    </p>
+    <div class="prose">
+      <Content />
+    </div>
+  </article>
+</Base>
+
+<style>
+  article {
+    margin-top: 32px;
+  }
+
+  .back {
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+    text-decoration: none;
+  }
+
+  h1 {
+    margin: 20px 0 8px;
+    font-size: clamp(30px, 6vw, 42px);
+  }
+
+  .meta {
+    display: flex;
+    gap: 8px;
+    margin: 0 0 36px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+  }
+
+  .prose {
+    max-width: 66ch;
+  }
+
+  .prose :global(h2) {
+    margin: 2em 0 0.6em;
+    font-size: 1.4em;
+  }
+
+  .prose :global(h3) {
+    margin: 1.6em 0 0.5em;
+    font-size: 1.15em;
+  }
+
+  .prose :global(p),
+  .prose :global(ul),
+  .prose :global(ol) {
+    margin: 0 0 1.1em;
+  }
+
+  .prose :global(li) {
+    margin: 0.3em 0;
+  }
+
+  .prose :global(a) {
+    color: var(--accent);
+  }
+
+  .prose :global(blockquote) {
+    margin: 1.5em 0;
+    padding: 2px 0 2px 18px;
+    border-left: 3px solid var(--accent);
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .prose :global(code) {
+    font-family: var(--mono);
+    font-size: 0.85em;
+    padding: 0.15em 0.35em;
+    border-radius: 5px;
+    background: var(--accent-soft);
+  }
+
+  .prose :global(pre) {
+    margin: 1.4em 0;
+    padding: 16px 18px;
+    border-radius: var(--radius);
+    overflow-x: auto;
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  .prose :global(pre code) {
+    padding: 0;
+    background: none;
+  }
+
+  .prose :global(img) {
+    border-radius: var(--radius);
+    margin: 1.5em 0;
+  }
+
+  .prose :global(hr) {
+    border: 0;
+    border-top: 1px solid var(--line);
+    margin: 2.5em 0;
+  }
+</style>

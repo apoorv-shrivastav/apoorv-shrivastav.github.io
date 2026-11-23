@@ -1,0 +1,152 @@
+---
+import '../styles/global.css';
+import ModeToggle from '../components/ModeToggle.astro';
+import { site, links, DEFAULT_MODE } from '../config';
+import { url } from '../lib/utils';
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+
+const { title, description = site.description } = Astro.props;
+const pageTitle = title ? `${title} · ${site.name}` : site.name;
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const year = new Date().getFullYear();
+---
+
+<!doctype html>
+<html lang="en" data-mode={DEFAULT_MODE}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{pageTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" type="image/svg+xml" href={url('favicon.svg')} />
+    <link rel="alternate" type="application/rss+xml" title={site.name} href={url('rss.xml')} />
+    <link rel="sitemap" href={url('sitemap-index.xml')} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Pick the mode before first paint, so there's no flash of the wrong side.
+         Order: ?mode= in the URL → last choice on this device → default. -->
+    <script is:inline define:vars={{ fallback: DEFAULT_MODE }}>
+      (function () {
+        var valid = ['professional', 'personal'];
+        var m = new URLSearchParams(location.search).get('mode');
+        if (valid.indexOf(m) < 0) {
+          try { m = localStorage.getItem('mode'); } catch (e) {}
+        }
+        if (valid.indexOf(m) < 0) m = fallback;
+        document.documentElement.dataset.mode = m;
+      })();
+    </script>
+  </head>
+  <body>
+    <header class="wrap site-header">
+      <a class="brand" href={url()}>{site.name}</a>
+      <nav>
+        <a href={url('blog/')}>Writing</a>
+        <ModeToggle />
+      </nav>
+    </header>
+
+    <main class="wrap">
+      <slot />
+    </main>
+
+    <footer class="wrap site-footer">
+      <span>© {year} {site.name}</span>
+      <span class="footer-links">
+        {links.map((l) => <a href={l.href}>{l.label}</a>)}
+        <a href={url('rss.xml')}>RSS</a>
+      </span>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .site-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-top: 28px;
+    padding-bottom: 28px;
+    font-family: var(--sans);
+  }
+
+  .brand {
+    font-weight: 600;
+    font-size: 15px;
+    text-decoration: none;
+    letter-spacing: -0.01em;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font-size: 14px;
+  }
+
+  nav > a {
+    color: var(--muted);
+    text-decoration: none;
+  }
+  nav > a:hover {
+    color: var(--accent);
+  }
+
+  main {
+    min-height: 60vh;
+  }
+
+  .site-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 96px;
+    padding-top: 24px;
+    padding-bottom: 40px;
+    border-top: 1px solid var(--line);
+    font-family: var(--sans);
+    font-size: 13px;
+    color: var(--muted);
+  }
+
+  .footer-links {
+    display: flex;
+    gap: 16px;
+  }
+
+  .footer-links a {
+    text-decoration: none;
+  }
+
+  @media (max-width: 560px) {
+    .site-header {
+      flex-wrap: wrap;
+    }
+    .brand {
+      width: 100%;
+    }
+    nav {
+      width: 100%;
+      justify-content: space-between;
+    }
+  }
+</style>

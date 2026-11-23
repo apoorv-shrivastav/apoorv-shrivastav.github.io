@@ -1,0 +1,165 @@
+/* ── Design tokens ──────────────────────────────────────────
+   Each mode gets its own accent, background and typeface,
+   so flipping the toggle changes the mood, not just the text. */
+
+:root {
+  --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --serif: 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
+  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+
+  --text: #1c1b19;
+  --muted: #6d6a64;
+  --line: #e6e2da;
+  --card: #ffffff;
+
+  --radius: 12px;
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  color-scheme: light;
+}
+
+html[data-mode='professional'] {
+  --bg: #fafaf8;
+  --accent: #2c56c9;
+  --accent-soft: #e8eefc;
+  --font-body: var(--sans);
+  --font-display: var(--sans);
+  --display-weight: 600;
+  --display-tracking: -0.02em;
+}
+
+html[data-mode='personal'] {
+  --bg: #f7f2e9;
+  --card: #fffdf8;
+  --line: #e7dfd1;
+  --accent: #a94e27;
+  --accent-soft: #f6e4d8;
+  --font-body: var(--serif);
+  --font-display: var(--serif);
+  --display-weight: 500;
+  --display-tracking: -0.01em;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --text: #ebe8e2;
+    --muted: #9c978e;
+    --line: #2b2925;
+    --card: #1b1a18;
+    color-scheme: dark;
+  }
+  html[data-mode='professional'] {
+    --bg: #111213;
+    --accent: #85a6ff;
+    --accent-soft: #1c2440;
+  }
+  html[data-mode='personal'] {
+    --bg: #15120e;
+    --card: #1e1a15;
+    --line: #2f2922;
+    --accent: #e3926a;
+    --accent-soft: #3a2519;
+  }
+}
+
+/* ── Mode visibility ── */
+html[data-mode='professional'] [data-show='personal'],
+html[data-mode='personal'] [data-show='professional'] {
+  display: none !important;
+}
+
+/* ── Base ── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 17px;
+  line-height: 1.65;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
+}
+
+html[data-mode='personal'] body {
+  font-size: 19px;
+}
+
+a {
+  color: inherit;
+  text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
+  text-underline-offset: 3px;
+  transition: color 0.15s, text-decoration-color 0.15s;
+}
+a:hover {
+  color: var(--accent);
+  text-decoration-color: currentColor;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: var(--display-weight);
+  letter-spacing: var(--display-tracking);
+  line-height: 1.2;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+.wrap {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.section-title {
+  font-family: var(--sans);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 16px;
+}
+
+/* Gentle fade when switching modes */
+@media (prefers-reduced-motion: no-preference) {
+  .mode-fade {
+    animation: modeFade 0.4s var(--ease);
+  }
+  @keyframes modeFade {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+    animation: none !important;
+  }
+}

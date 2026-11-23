@@ -1,0 +1,171 @@
+---
+import Base from '../layouts/Base.astro';
+import PostList from '../components/PostList.astro';
+import ProjectCard from '../components/ProjectCard.astro';
+import { site, links, profiles, MODES } from '../config';
+import { projects } from '../data/projects';
+import { getPosts, url } from '../lib/utils';
+
+const posts = await getPosts();
+const HOME_LIMIT = 6;
+---
+
+<Base>
+  <section class="hero">
+    <div class="photo">
+      {
+        MODES.map((m) => (
+          <img
+            data-show={m}
+            src={url(profiles[m].photo)}
+            alt={`${site.name}, ${profiles[m].label.toLowerCase()} photo`}
+            width="88"
+            height="88"
+          />
+        ))
+      }
+    </div>
+    <div>
+      <h1>{site.name}</h1>
+      {
+        MODES.map((m) => (
+          <p class="tagline" data-show={m} data-fade>
+            {profiles[m].tagline}
+          </p>
+        ))
+      }
+    </div>
+  </section>
+
+  {
+    MODES.map((m) => (
+      <section class="bio" data-show={m} data-fade>
+        {profiles[m].bio.map((p) => (
+          <p>{p}</p>
+        ))}
+      </section>
+    ))
+  }
+
+  <ul class="links">
+    {
+      links.map((l) => (
+        <li>
+          <a href={l.href}>{l.label} ↗</a>
+        </li>
+      ))
+    }
+  </ul>
+
+  {
+    MODES.map((m) => {
+      const list = posts.filter((p) => p.data.mode === m);
+      return (
+        <section class="block" data-show={m} data-fade>
+          <h2 class="section-title">{profiles[m].writingTitle}</h2>
+          <PostList posts={list.slice(0, HOME_LIMIT)} />
+          {list.length > HOME_LIMIT && (
+            <a class="more" href={url(`blog/?mode=${m}`)}>
+              All {profiles[m].writingTitle.toLowerCase()} →
+            </a>
+          )}
+        </section>
+      );
+    })
+  }
+
+  <section class="block">
+    <h2 class="section-title">Things I’ve built</h2>
+    <div class="grid">
+      {projects.map((p) => <ProjectCard project={p} />)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    margin-top: 40px;
+  }
+
+  .photo img {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--line);
+  }
+
+  h1 {
+    margin: 0;
+    font-size: clamp(30px, 6vw, 40px);
+  }
+
+  .tagline {
+    margin: 2px 0 0;
+    color: var(--muted);
+  }
+
+  .bio {
+    margin-top: 28px;
+    max-width: 62ch;
+  }
+
+  .bio p {
+    margin: 0 0 14px;
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 20px;
+    margin: 8px 0 0;
+    padding: 0;
+    list-style: none;
+    font-family: var(--sans);
+    font-size: 14px;
+  }
+
+  .links a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+  .links a:hover {
+    text-decoration: underline;
+  }
+
+  .block {
+    margin-top: 64px;
+  }
+
+  .more {
+    display: inline-block;
+    margin-top: 14px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  @media (max-width: 560px) {
+    .hero {
+      margin-top: 16px;
+      gap: 16px;
+    }
+    .photo img {
+      width: 68px;
+      height: 68px;
+    }
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

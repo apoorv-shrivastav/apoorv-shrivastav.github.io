@@ -1,0 +1,35 @@
+---
+import Base from '../../layouts/Base.astro';
+import PostList from '../../components/PostList.astro';
+import { profiles, MODES } from '../../config';
+import { getPosts } from '../../lib/utils';
+
+const posts = await getPosts();
+---
+
+<Base title="Writing">
+  {
+    MODES.map((m) => (
+      <section data-show={m} data-fade>
+        <h1>{profiles[m].writingTitle}</h1>
+        <p class="hint">
+          Showing the {profiles[m].label.toLowerCase()} side. Use the toggle above to switch.
+        </p>
+        <PostList posts={posts.filter((p) => p.data.mode === m)} />
+      </section>
+    ))
+  }
+</Base>
+
+<style>
+  h1 {
+    margin: 40px 0 4px;
+    font-size: 34px;
+  }
+  .hint {
+    margin: 0 0 28px;
+    font-family: var(--sans);
+    font-size: 14px;
+    color: var(--muted);
+  }
+</style>
