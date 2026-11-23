@@ -41,7 +41,7 @@ export const profiles: Record<
   },
   personal: {
     label: 'Personal',
-    photo: 'images/personal.svg',
+    photo: 'images/personal.jpg',
     tagline: 'Bay Area. Curious about most things.',
     bio: [
       // ✏️ Replace these two lines with something that sounds like you off the clock.
