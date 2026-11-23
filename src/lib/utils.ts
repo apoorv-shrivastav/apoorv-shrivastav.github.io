@@ -20,8 +20,16 @@ export function formatDate(date: Date): string {
   });
 }
 
-/** All published posts, newest first. */
+/**
+ * All published posts, newest first.
+ * Posts dated in the future stay hidden until a build runs on or after that date
+ * (the deploy workflow rebuilds every Monday). `npm run dev` shows them so you can preview.
+ */
 export async function getPosts(): Promise<CollectionEntry<'blog'>[]> {
-  const posts = await getCollection('blog', ({ data }) => !data.draft);
+  const now = Date.now();
+  const posts = await getCollection(
+    'blog',
+    ({ data }) => !data.draft && (import.meta.env.DEV || data.date.valueOf() <= now),
+  );
   return posts.sort((a, b) => b.data.date.valueOf() - a.data.date.valueOf());
 }

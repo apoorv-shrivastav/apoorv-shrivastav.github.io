@@ -43,6 +43,14 @@ draft: false        # true hides it
 Write in Markdown.
 ```
 
+### Scheduling posts
+
+Give a post a future `date:` and push it. It stays hidden on the live site (no page, no RSS entry) until that date. The deploy workflow rebuilds every Monday at 14:00 UTC, so a post dated on a Monday appears that morning. For another weekday, run the workflow by hand from the repo's **Actions** tab on that day, or push any change.
+
+`npm run dev` shows scheduled posts too, so you can preview them locally.
+
+GitHub pauses scheduled workflows in repos with no activity for 60 days. If that happens, the Actions tab shows a button to turn it back on.
+
 ## Put it online (GitHub Pages, free)
 
 1. Create a GitHub repo named **`apoorv-shrivastav.github.io`** and push this folder to `main`.
