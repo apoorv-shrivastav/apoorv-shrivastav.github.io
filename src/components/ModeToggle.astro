@@ -22,7 +22,7 @@ import { profiles } from '../config';
     if (root.dataset.mode === mode && animate) return;
     root.dataset.mode = mode;
 
-    document.querySelectorAll<HTMLButtonElement>('[data-set-mode]').forEach((btn) => {
+    document.querySelectorAll<HTMLButtonElement>('.toggle [data-set-mode]').forEach((btn) => {
       btn.setAttribute('aria-pressed', String(btn.dataset.setMode === mode));
     });
 

@@ -3,10 +3,13 @@ import type { Project } from '../data/projects';
 
 interface Props {
   project: Project;
+  index?: number;
 }
 
-const { title, description, href, tag, stack, mode } = Astro.props.project;
+const { project, index } = Astro.props;
+const { title, description, href, tag, stack, mode } = project;
 const external = /^https?:/.test(href);
+const num = index ? String(index).padStart(2, '0') : undefined;
 ---
 
 <a
@@ -17,40 +20,80 @@ const external = /^https?:/.test(href);
   rel={external ? 'noopener' : undefined}
 >
   <div class="top">
-    <h3>{title}</h3>
+    {num && <span class="num">{num}</span>}
     {tag && <span class="tag">{tag}</span>}
+    <span class="arrow" aria-hidden="true">↗</span>
   </div>
+  <h3>{title}</h3>
   <p>{description}</p>
   {stack && <span class="stack">{stack}</span>}
 </a>
 
 <style>
   .card {
+    position: relative;
     display: flex;
     flex-direction: column;
     gap: 8px;
-    padding: 18px 18px 16px;
+    padding: 16px 18px 16px;
     border: 1px solid var(--line);
     border-radius: var(--radius);
     background: var(--card);
     text-decoration: none;
     transition:
       border-color 0.2s,
-      transform 0.2s var(--ease),
+      transform 0.25s var(--ease),
+      box-shadow 0.25s var(--ease),
       background-color 0.35s;
   }
 
   .card:hover {
     color: inherit;
     border-color: var(--accent);
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 12px 28px -16px color-mix(in srgb, var(--accent) 60%, transparent);
+  }
+
+  /* Personal side: cards sit like notes on a table, tilting a touch on hover */
+  :global(html[data-mode='personal']) .card:nth-child(odd):hover {
+    transform: translateY(-3px) rotate(-0.6deg);
+  }
+  :global(html[data-mode='personal']) .card:nth-child(even):hover {
+    transform: translateY(-3px) rotate(0.6deg);
   }
 
   .top {
     display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 12px;
+    align-items: center;
+    gap: 10px;
+    min-height: 20px;
+  }
+
+  .num {
+    font-family: var(--mono);
+    font-size: 11.5px;
+    color: var(--accent);
+  }
+
+  :global(html[data-mode='personal']) .num {
+    font-family: var(--hand);
+    font-size: 19px;
+    line-height: 1;
+  }
+
+  .arrow {
+    margin-left: auto;
+    color: var(--accent);
+    opacity: 0;
+    transform: translate(-4px, 4px);
+    transition:
+      opacity 0.2s,
+      transform 0.25s var(--ease);
+  }
+
+  .card:hover .arrow {
+    opacity: 1;
+    transform: none;
   }
 
   h3 {
@@ -63,7 +106,6 @@ const external = /^https?:/.test(href);
   }
 
   .tag {
-    flex-shrink: 0;
     padding: 2px 8px;
     border-radius: 999px;
     background: var(--accent-soft);
@@ -87,5 +129,12 @@ const external = /^https?:/.test(href);
     font-family: var(--mono);
     font-size: 12px;
     color: var(--muted);
+  }
+
+  @media (hover: none) {
+    .arrow {
+      opacity: 0.6;
+      transform: none;
+    }
   }
 </style>

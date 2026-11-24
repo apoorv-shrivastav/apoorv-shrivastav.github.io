@@ -24,24 +24,41 @@ export const links = [
 
 // What changes when someone flips the toggle.
 // `photo` is a path inside /public. Drop your own image in public/images/
-// (jpg/png/webp all work) and update the path.
-export const profiles: Record<
-  Mode,
-  { label: string; photo: string; tagline: string; bio: string[]; writingTitle: string }
-> = {
+// (jpg/png/webp all work) and update the path. Both sides can share one photo:
+// the professional side shows it in black & white, the personal side as a polaroid.
+type Profile = {
+  label: string;
+  photo: string;
+  tagline: string;
+  bio: string[];
+  writingTitle: string;
+  focus?: string[]; // chips under the bio
+  toolbox?: string[]; // the "Toolbox" row
+  photoBadge?: string; // small label on the professional photo
+  photoCaption?: string; // handwritten caption on the polaroid
+  switchHint: string; // the little "flip to the other side" link
+};
+
+export const profiles: Record<Mode, Profile> = {
   professional: {
     label: 'Professional',
-    photo: 'images/professional.svg',
+    photo: 'images/photo.jpg',
+    photoBadge: 'Bay Area, CA',
     tagline: 'Senior Data Scientist & AI Engineer',
     bio: [
       'I build at the intersection of data, AI systems, and workflow automation, helping teams move beyond AI demos to systems that hold up in production.',
       'Lately that means integrating LLMs into real data pipelines, evaluating model outputs rigorously, and designing agentic systems that are useful and reliable. I care less about any single tool and more about making sound judgment calls and shipping.',
     ],
+    focus: ['AI systems in production', 'LLM evaluation', 'Agentic workflows', 'RAG', 'Context engineering'],
+    toolbox: ['Python', 'SQL', 'TypeScript', 'React', 'LangGraph', 'OpenAI & Anthropic APIs', 'AWS'],
+    switchHint: 'Off the clock? See the personal side →',
     writingTitle: 'Writing',
   },
   personal: {
     label: 'Personal',
-    photo: 'images/personal.jpg',
+    photo: 'images/photo.jpg',
+    photoCaption: 'Golden Gate, SF',
+    switchHint: '← back to the work stuff',
     tagline: 'Bay Area. Curious about most things.',
     bio: [
       // ✏️ Replace these two lines with something that sounds like you off the clock.

@@ -1,0 +1,59 @@
+---
+// Professional: "01  WRITING ─────" in mono. Personal: "✦ Notes" in italic serif.
+interface Props {
+  index: string;
+  title: string;
+}
+const { index, title } = Astro.props;
+---
+
+<h2 class="section-title">
+  <span class="idx" aria-hidden="true">
+    <span data-show="professional">{index}</span>
+    <span data-show="personal">✦</span>
+  </span>
+  <span class="label">{title}</span>
+</h2>
+
+<style>
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 0 0 18px;
+  }
+
+  .idx {
+    color: var(--accent);
+  }
+
+  :global(html[data-mode='professional']) .section-title {
+    font-family: var(--mono);
+    font-size: 12.5px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  :global(html[data-mode='professional']) .section-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--line);
+  }
+
+  :global(html[data-mode='personal']) .section-title {
+    font-family: var(--serif);
+    font-size: 26px;
+    font-style: italic;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: var(--text);
+  }
+
+  :global(html[data-mode='personal']) .idx {
+    font-size: 18px;
+    font-style: normal;
+  }
+</style>

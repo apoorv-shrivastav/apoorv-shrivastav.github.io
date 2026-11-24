@@ -5,7 +5,8 @@
 :root {
   --sans: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
   --serif: 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
-  --mono: ui-monospace, 'SF Mono', Menlo, monospace;
+  --mono: 'JetBrains Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+  --hand: 'Caveat', 'Bradley Hand', cursive;
 
   --text: #1c1b19;
   --muted: #6d6a64;
@@ -94,6 +95,62 @@ html[data-mode='personal'] body {
   font-size: 19px;
 }
 
+/* ── Backdrops ──
+   Professional: a faint dot grid with a cool glow, fading out down the page.
+   Personal: a sunset glow (borrowed from the photo) over light paper grain. */
+body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 820px;
+  z-index: -1;
+  pointer-events: none;
+  transition: opacity 0.5s var(--ease);
+}
+
+html[data-mode='professional'] body::before {
+  background-image:
+    radial-gradient(560px 320px at 82% 60px, var(--glow-a), transparent 70%),
+    radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size:
+    auto,
+    22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+
+html[data-mode='personal'] body::before {
+  background-image:
+    radial-gradient(620px 360px at 85% 0, var(--glow-a), transparent 70%),
+    radial-gradient(520px 300px at 8% 40px, var(--glow-b), transparent 70%);
+}
+
+html[data-mode='personal'] body {
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
+}
+
+html[data-mode='professional'] {
+  --dot: rgba(28, 27, 25, 0.13);
+  --glow-a: rgba(44, 86, 201, 0.13);
+}
+html[data-mode='personal'] {
+  --glow-a: rgba(255, 158, 102, 0.32);
+  --glow-b: rgba(236, 132, 160, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-mode='professional'] {
+    --dot: rgba(235, 232, 226, 0.1);
+    --glow-a: rgba(133, 166, 255, 0.14);
+  }
+  html[data-mode='personal'] {
+    --glow-a: rgba(227, 146, 106, 0.16);
+    --glow-b: rgba(200, 100, 130, 0.1);
+  }
+}
+
 a {
   color: inherit;
   text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
@@ -130,16 +187,6 @@ img {
   max-width: 720px;
   margin: 0 auto;
   padding: 0 20px;
-}
-
-.section-title {
-  font-family: var(--sans);
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin: 0 0 16px;
 }
 
 /* Gentle fade when switching modes */
