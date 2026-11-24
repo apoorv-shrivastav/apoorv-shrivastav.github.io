@@ -73,7 +73,7 @@ import { profiles } from '../config';
     left: 3px;
     width: calc(50% - 3px);
     border-radius: 999px;
-    background: var(--accent-soft);
+    background: var(--tonal);
     transition: transform 0.35s var(--ease), background-color 0.35s;
   }
 
@@ -101,9 +101,12 @@ import { profiles } from '../config';
     transition: color 0.2s;
   }
 
-  button:hover,
-  button[aria-pressed='true'] {
+  button:hover {
     color: var(--accent);
+  }
+
+  button[aria-pressed='true'] {
+    color: var(--on-tonal);
   }
 
   @media (max-width: 420px) {

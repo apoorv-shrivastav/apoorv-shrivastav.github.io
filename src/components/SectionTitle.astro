@@ -1,59 +1,71 @@
 ---
-// Professional: "01  WRITING ─────" in mono. Personal: "✦ Notes" in italic serif.
+// A Material-style section heading with an optional text-button link on the right.
 interface Props {
-  index: string;
   title: string;
+  link?: { href: string; label: string };
 }
-const { index, title } = Astro.props;
+const { title, link } = Astro.props;
+const external = link ? /^https?:/.test(link.href) : false;
 ---
 
-<h2 class="section-title">
-  <span class="idx" aria-hidden="true">
-    <span data-show="professional">{index}</span>
-    <span data-show="personal">✦</span>
-  </span>
-  <span class="label">{title}</span>
-</h2>
+<div class="section-head">
+  <h2 class="section-title">{title}</h2>
+  {
+    link && (
+      <a
+        class="section-link"
+        href={link.href}
+        target={external ? '_blank' : undefined}
+        rel={external ? 'noopener' : undefined}
+      >
+        {link.label}
+        <span class="msr" aria-hidden="true">
+          {external ? 'open_in_new' : 'arrow_forward'}
+        </span>
+      </a>
+    )
+  }
+</div>
 
 <style>
-  .section-title {
+  .section-head {
     display: flex;
     align-items: center;
-    gap: 12px;
-    margin: 0 0 18px;
+    justify-content: space-between;
+    gap: 16px;
+    margin: 0 0 14px;
   }
 
-  .idx {
-    color: var(--accent);
-  }
-
-  :global(html[data-mode='professional']) .section-title {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    font-weight: 500;
-    letter-spacing: 0.1em;
-    text-transform: uppercase;
-    color: var(--muted);
-  }
-
-  :global(html[data-mode='professional']) .section-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: var(--line);
-  }
-
-  :global(html[data-mode='personal']) .section-title {
-    font-family: var(--serif);
-    font-size: 26px;
-    font-style: italic;
-    font-weight: 500;
-    letter-spacing: -0.01em;
+  .section-title {
+    margin: 0;
+    font-family: var(--sans);
+    font-size: 24px;
+    font-weight: 400;
+    letter-spacing: 0;
     color: var(--text);
   }
 
-  :global(html[data-mode='personal']) .idx {
+  .section-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    flex-shrink: 0;
+    margin-right: -12px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+    transition: background-color 0.2s;
+  }
+
+  .section-link:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .section-link .msr {
     font-size: 18px;
-    font-style: normal;
   }
 </style>

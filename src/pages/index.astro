@@ -1,29 +1,55 @@
 ---
+// One layout for both sides. What differs per side comes from src/config.ts
+// (text, chips, Now card) and the color tokens in src/styles/global.css.
 import Base from '../layouts/Base.astro';
-import PostList from '../components/PostList.astro';
-import ProjectCard from '../components/ProjectCard.astro';
 import SectionTitle from '../components/SectionTitle.astro';
-import { site, links, profiles, MODES } from '../config';
+import { site, links, profiles, MODES, type Mode } from '../config';
 import { projects } from '../data/projects';
-import { getPosts, url, readingTime, formatDate } from '../lib/utils';
+import { getPosts, url, formatDate } from '../lib/utils';
 
 const posts = await getPosts();
 const HOME_LIMIT = 6;
 const pro = profiles.professional;
 const per = profiles.personal;
+
+const postsFor = (m: Mode) => posts.filter((p) => p.data.mode === m);
+
+// "Nov 23" for this year, "Nov 2025" for older posts.
+const thisYear = new Date().getUTCFullYear();
+const shortDate = (d: Date) =>
+  d.getUTCFullYear() === thisYear
+    ? d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' })
+    : d.toLocaleDateString('en-US', { month: 'short', year: 'numeric', timeZone: 'UTC' });
+
+// Mark posts from the last 7 days. With one post a week, only the newest gets it.
+const isNew = (d: Date) => {
+  const age = Date.now() - d.valueOf();
+  return age >= 0 && age < 7 * 24 * 60 * 60 * 1000;
+};
+
+const listIcon: Record<Mode, string> = { professional: 'article', personal: 'edit_note' };
 ---
 
 <Base>
   <!-- ── Hero ─────────────────────────────────────────── -->
   <section class="hero">
     <div class="intro">
-      <p class="eyebrow" data-show="professional" data-fade>
-        <span class="glyph" aria-hidden="true">⚙︎</span>{pro.tagline}
-      </p>
-      <p class="eyebrow" data-show="personal" data-fade>
-        <span aria-hidden="true">✦</span>
-        {per.tagline}
-      </p>
+      {
+        MODES.map((m) => (
+          <p class="eyebrow" data-show={m} data-fade>
+            {m === 'professional' ? (
+              <span class="msr" aria-hidden="true">
+                settings
+              </span>
+            ) : (
+              <span class="sparkle" aria-hidden="true">
+                ✦
+              </span>
+            )}
+            {profiles[m].tagline}
+          </p>
+        ))
+      }
 
       <h1>{site.name}</h1>
 
@@ -38,12 +64,15 @@ const per = profiles.personal;
       }
 
       {
-        pro.focus && (
-          <ul class="chips" data-show="professional" data-fade aria-label="Focus areas">
-            {pro.focus.map((f) => (
-              <li>{f}</li>
-            ))}
-          </ul>
+        MODES.map(
+          (m) =>
+            profiles[m].focus && (
+              <ul class="chips" data-show={m} data-fade>
+                {profiles[m].focus!.map((f) => (
+                  <li>{f}</li>
+                ))}
+              </ul>
+            ),
         )
       }
 
@@ -51,7 +80,7 @@ const per = profiles.personal;
         {
           links.map((l) => (
             <li>
-              <a href={l.href}>{l.label} ↗</a>
+              <a href={l.href}>{l.label}</a>
             </li>
           ))
         }
@@ -61,7 +90,7 @@ const per = profiles.personal;
         MODES.map((m) => (
           <button
             type="button"
-            class:list={['hint', m]}
+            class="hint"
             data-show={m}
             data-set-mode={m === 'professional' ? 'personal' : 'professional'}
           >
@@ -72,23 +101,34 @@ const per = profiles.personal;
     </div>
 
     <div class="portrait">
-      <figure class="frame-pro" data-show="professional" data-fade>
+      <!-- Professional: round black & white avatar that fades to color on hover -->
+      <figure class="avatar bw" data-show="professional" data-fade>
         <img src={url(pro.photo)} alt={site.name} width="512" height="512" />
-        {pro.photoBadge && <figcaption>{pro.photoBadge}</figcaption>}
+        {
+          pro.photoBadge && (
+            <figcaption>
+              <span class="msr" aria-hidden="true">
+                location_on
+              </span>
+              {pro.photoBadge}
+            </figcaption>
+          )
+        }
       </figure>
+      <!-- Personal: a tilted polaroid with a handwritten caption -->
       <figure class="polaroid" data-show="personal" data-fade>
         <img src={url(per.photo)} alt={`${site.name} at the Golden Gate Bridge`} width="512" height="512" />
-        {per.photoCaption && <figcaption>{per.photoCaption}</figcaption>}
+        {per.photoBadge && <figcaption>{per.photoBadge}</figcaption>}
       </figure>
     </div>
   </section>
 
-  <!-- ── Toolbox (professional) ───────────────────────── -->
+  <!-- ── Toolbox (professional) / Now (personal): a tonal card under the hero ── -->
   {
     pro.toolbox && (
-      <section class="toolbox" data-show="professional" data-fade aria-label="Toolbox">
-        <span class="toolbox-label">Toolbox</span>
-        <ul>
+      <section class="panel" data-show="professional" data-fade aria-label="Toolbox">
+        <h2 class="panel-title">Toolbox</h2>
+        <ul class="panel-chips">
           {pro.toolbox.map((t) => (
             <li>{t}</li>
           ))}
@@ -96,67 +136,102 @@ const per = profiles.personal;
       </section>
     )
   }
-
-  <!-- ── Now (personal) ───────────────────────────────── -->
   {
     per.now && (
-      <section class="now" data-show="personal" data-fade aria-label="What I'm up to now">
-        <h2 class="now-title">Now</h2>
-        <dl>
+      <section class="panel" data-show="personal" data-fade aria-label="What I'm up to now">
+        <h2 class="panel-title">Now</h2>
+        <ul class="now-list">
           {per.now.map((n) => (
-            <div>
-              <dt>{n.label}</dt>
-              <dd>{n.value}</dd>
-            </div>
+            <li>
+              <span class="now-icon msr" aria-hidden="true">
+                {n.icon}
+              </span>
+              <span class="now-text">
+                <span class="now-label">{n.label}</span>
+                <span class="now-value">{n.value}</span>
+              </span>
+            </li>
           ))}
-        </dl>
+        </ul>
       </section>
     )
   }
 
-  <!-- ── Writing ──────────────────────────────────────── -->
+  <!-- ── Writing / Notes: the same rounded list on both sides ── -->
   {
     MODES.map((m) => {
-      const list = posts.filter((p) => p.data.mode === m);
-      const [latest, ...rest] = list;
+      const list = postsFor(m);
       return (
         <section class="block" data-show={m} data-fade>
-          <SectionTitle index="01" title={profiles[m].writingTitle} />
-          {latest ? (
-            <a class="latest" href={url(`blog/${latest.id}/`)}>
-              <span class="kicker">Latest</span>
-              <h3>{latest.data.title}</h3>
-              {latest.data.description && <p>{latest.data.description}</p>}
-              <span class="latest-meta">
-                {formatDate(latest.data.date)} · {readingTime(latest.body)} read
-                <span class="read">Read →</span>
-              </span>
-            </a>
-          ) : (
+          <SectionTitle
+            title={profiles[m].writingTitle}
+            link={list.length > HOME_LIMIT ? { href: url(`blog/?mode=${m}`), label: 'All posts' } : undefined}
+          />
+          {list.length === 0 ? (
             <p class="empty">Nothing here yet. Check back soon.</p>
-          )}
-          {rest.length > 0 && <PostList posts={rest.slice(0, HOME_LIMIT - 1)} />}
-          {list.length > HOME_LIMIT && (
-            <a class="more" href={url(`blog/?mode=${m}`)}>
-              All {profiles[m].writingTitle.toLowerCase()} →
-            </a>
+          ) : (
+            <ol class="rows">
+              {list.slice(0, HOME_LIMIT).map((post) => (
+                <li>
+                  <a href={url(`blog/${post.id}/`)}>
+                    <span class="lead msr" aria-hidden="true">
+                      {listIcon[m]}
+                    </span>
+                    <span class="row-body">
+                      <span class="row-title">
+                        {post.data.title}
+                        {isNew(post.data.date) && <span class="new">New</span>}
+                      </span>
+                      {post.data.description && <span class="row-desc">{post.data.description}</span>}
+                    </span>
+                    <time datetime={post.data.date.toISOString()} title={formatDate(post.data.date)}>
+                      {shortDate(post.data.date)}
+                    </time>
+                  </a>
+                </li>
+              ))}
+            </ol>
           )}
         </section>
       );
     })
   }
 
-  <!-- ── Projects ─────────────────────────────────────── -->
+  <!-- ── Projects (professional) ──────────────────────── -->
   <section class="block" data-show="professional" data-fade>
-    <SectionTitle index="02" title="Things I’ve built" />
-    <div class="grid">
-      {projects.map((p, i) => <ProjectCard project={p} index={i + 1} />)}
-    </div>
+    <SectionTitle
+      title="Things I’ve built"
+      link={{ href: 'https://github.com/apoorv-shrivastav', label: 'More on GitHub' }}
+    />
+    <ul class="rows">
+      {
+        projects.map((p) => (
+          <li>
+            <a href={p.href} target="_blank" rel="noopener">
+              <span class="lead msr" aria-hidden="true">
+                code
+              </span>
+              <span class="row-body">
+                <span class="row-title">{p.title}</span>
+                <span class="row-desc">{p.description}</span>
+                <span class="row-chips">
+                  {p.tag && <span class="chip tonal">{p.tag}</span>}
+                  {p.stack && <span class="chip">{p.stack}</span>}
+                </span>
+              </span>
+              <span class="trail msr" aria-hidden="true">
+                open_in_new
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
   </section>
 </Base>
 
 <style>
-  /* Hero */
+  /* ── Hero ── */
   .hero {
     display: grid;
     grid-template-columns: minmax(0, 1fr) 210px;
@@ -165,44 +240,36 @@ const per = profiles.personal;
     margin-top: 36px;
   }
 
+  /* Tagline as an assist chip */
   .eyebrow {
     display: inline-flex;
     align-items: center;
-    gap: 10px;
-    margin: 0 0 14px;
-    font-family: var(--sans);
-    font-size: 13px;
+    gap: 8px;
+    margin: 0 0 16px;
+    padding: 6px 14px 6px 10px;
+    border-radius: 8px;
+    background: var(--tonal);
+    color: var(--on-tonal);
+    font-size: 14px;
     font-weight: 500;
-    color: var(--accent);
+    letter-spacing: 0.01em;
   }
 
-  :global(html[data-mode='professional']) .eyebrow {
-    font-family: var(--mono);
-    font-size: 12.5px;
-    letter-spacing: 0.02em;
+  .eyebrow .msr {
+    font-size: 18px;
   }
 
-  :global(html[data-mode='personal']) .eyebrow {
-    font-family: var(--serif);
-    font-style: italic;
-    font-size: 17px;
-    font-weight: 400;
-  }
-
-  .glyph {
-    font-family: var(--sans);
+  .sparkle {
+    width: 18px;
+    text-align: center;
     font-size: 15px;
-    line-height: 1;
   }
 
   h1 {
     margin: 0;
-    font-size: clamp(36px, 7vw, 54px);
-    line-height: 1.05;
-  }
-
-  :global(html[data-mode='personal']) h1 {
-    font-style: italic;
+    font-size: clamp(38px, 7vw, 56px);
+    line-height: 1.1;
+    letter-spacing: -0.02em;
   }
 
   .bio {
@@ -214,6 +281,7 @@ const per = profiles.personal;
     margin: 0 0 12px;
   }
 
+  /* Assist chips */
   .chips {
     display: flex;
     flex-wrap: wrap;
@@ -224,106 +292,134 @@ const per = profiles.personal;
   }
 
   .chips li {
-    padding: 5px 11px;
-    border: 1px solid var(--line);
-    border-radius: 999px;
-    background: var(--card);
-    font-family: var(--sans);
-    font-size: 13px;
-    color: var(--text);
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border: 1px solid var(--outline);
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
   }
 
+  /* A filled button, then outlined buttons */
   .links {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px 20px;
-    margin: 20px 0 0;
+    gap: 8px;
+    margin: 22px 0 0;
     padding: 0;
     list-style: none;
-    font-family: var(--sans);
     font-size: 14px;
     font-weight: 500;
   }
 
   .links a {
+    display: inline-flex;
+    align-items: center;
+    height: 40px;
+    padding: 0 22px;
+    border: 1px solid var(--outline);
+    border-radius: 999px;
     color: var(--accent);
+    letter-spacing: 0.01em;
     text-decoration: none;
-  }
-  .links a:hover {
-    text-decoration: underline;
+    transition:
+      background-color 0.2s,
+      box-shadow 0.2s;
   }
 
+  .links a:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  .links li:first-child a {
+    border-color: var(--accent);
+    background: var(--accent);
+    color: var(--on-accent);
+  }
+
+  .links li:first-child a:hover {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.25);
+    background: color-mix(in srgb, var(--accent) 92%, var(--on-accent));
+  }
+
+  /* Text button to flip sides */
   .hint {
     display: inline-block;
-    margin-top: 18px;
-    padding: 0;
+    margin: 14px 0 0 -12px;
+    padding: 8px 12px;
     border: 0;
+    border-radius: 999px;
     background: none;
-    color: var(--muted);
-    cursor: pointer;
-    transition: color 0.2s, transform 0.2s var(--ease);
-  }
-  .hint:hover {
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
     color: var(--accent);
-  }
-  .hint.professional {
-    font-family: var(--mono);
-    font-size: 12.5px;
-  }
-  .hint.personal {
-    font-family: var(--hand);
-    font-size: 21px;
-    transform: rotate(-1.5deg);
+    cursor: pointer;
+    transition: background-color 0.2s;
   }
 
-  /* Professional photo: black & white, offset outline, color on hover */
-  .portrait figure {
+  .hint:hover {
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+
+  /* Round avatar with a location chip, like a Google profile.
+     Professional: black & white, fading to color on hover. */
+  .avatar {
+    position: relative;
     margin: 0;
+    padding: 6px;
+    border-radius: 50%;
+    background: var(--accent-soft);
   }
 
-  .frame-pro {
-    position: relative;
-  }
-
-  .frame-pro::before {
-    content: '';
-    position: absolute;
-    inset: 12px -12px -12px 12px;
-    border: 1.5px solid var(--accent);
-    border-radius: 22px;
-    opacity: 0.55;
-  }
-
-  .frame-pro img {
-    position: relative;
+  .avatar img {
     width: 100%;
     height: auto;
     aspect-ratio: 1;
     object-fit: cover;
-    border-radius: 20px;
-    filter: grayscale(1) contrast(1.06);
+    border-radius: 50%;
+    border: 4px solid var(--bg);
     transition: filter 0.6s var(--ease);
   }
 
-  .frame-pro:hover img {
+  .avatar.bw img {
+    filter: grayscale(1) contrast(1.05);
+  }
+
+  .avatar.bw:hover img {
     filter: grayscale(0);
   }
 
-  .frame-pro figcaption {
+  .avatar figcaption {
     position: absolute;
-    left: 12px;
-    bottom: 12px;
-    padding: 4px 9px;
-    border-radius: 999px;
-    background: color-mix(in srgb, var(--bg) 88%, transparent);
-    backdrop-filter: blur(6px);
-    font-family: var(--mono);
-    font-size: 11px;
+    left: 50%;
+    bottom: 2px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    height: 32px;
+    padding: 0 12px 0 8px;
+    transform: translateX(-50%);
+    white-space: nowrap;
+    border-radius: 8px;
+    background: var(--surface-2);
     color: var(--text);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+    font-size: 13px;
+    font-weight: 500;
   }
 
-  /* Personal photo: a tilted polaroid */
+  .avatar figcaption .msr {
+    font-size: 18px;
+    color: var(--accent);
+  }
+
+  /* Personal photo: a tilted polaroid that straightens on hover */
   .polaroid {
+    margin: 0;
     padding: 10px 10px 0;
     background: #fffdf9;
     border-radius: 3px;
@@ -354,179 +450,219 @@ const per = profiles.personal;
     color: #5b4433;
   }
 
-  /* Toolbox strip */
-  .toolbox {
-    display: flex;
-    align-items: baseline;
-    gap: 16px;
-    margin-top: 56px;
-    padding: 14px 0;
-    border-top: 1px dashed var(--line);
-    border-bottom: 1px dashed var(--line);
-    font-family: var(--mono);
-    font-size: 12.5px;
+  /* ── Tonal card under the hero: Toolbox / Now ── */
+  .panel {
+    margin-top: 48px;
+    padding: 18px 20px 20px;
+    border-radius: 16px;
+    background: var(--surface-1);
   }
 
-  .toolbox-label {
-    flex-shrink: 0;
-    color: var(--accent);
+  .panel-title {
+    margin: 0 0 12px;
+    font-family: var(--sans);
+    font-size: 14px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    color: var(--text);
   }
 
-  .toolbox ul {
+  .panel-chips {
     display: flex;
     flex-wrap: wrap;
-    gap: 6px 18px;
+    gap: 8px;
     margin: 0;
     padding: 0;
     list-style: none;
+  }
+
+  .panel-chips li {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: var(--bg);
+    font-size: 14px;
+    font-weight: 500;
     color: var(--muted);
   }
 
-  /* Now card (personal): an index card taped to the page */
-  .now {
-    position: relative;
-    margin-top: 56px;
-    padding: 26px 26px 20px;
-    background: var(--card);
-    border: 1px solid var(--line);
-    border-radius: 4px;
-    box-shadow: 0 14px 30px -18px rgba(90, 45, 15, 0.35);
-    transform: rotate(-0.8deg);
-  }
-
-  .now::before {
-    content: '';
-    position: absolute;
-    top: -11px;
-    left: 50%;
-    width: 92px;
-    height: 22px;
-    transform: translateX(-50%) rotate(2deg);
-    background: color-mix(in srgb, var(--accent) 22%, transparent);
-    border-radius: 2px;
-  }
-
-  .now-title {
-    margin: 0 0 12px;
-    font-family: var(--hand);
-    font-size: 30px;
-    font-weight: 500;
-    line-height: 1;
-    color: var(--accent);
-  }
-
-  .now dl {
+  .now-list {
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
-    gap: 16px 24px;
+    gap: 12px;
     margin: 0;
+    padding: 0;
+    list-style: none;
   }
 
-  .now dt {
-    font-family: var(--hand);
-    font-size: 20px;
+  .now-list li {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px;
+    border-radius: 12px;
+    background: var(--bg);
+  }
+
+  .now-icon {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--on-accent-soft);
+  }
+
+  .now-text {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+  }
+
+  .now-label {
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.02em;
     color: var(--muted);
   }
 
-  .now dd {
-    margin: 0;
-    font-size: 17px;
-    line-height: 1.4;
+  .now-value {
+    font-size: 15px;
+    line-height: 1.35;
+    color: var(--text);
   }
 
-  /* Latest post card */
+  /* ── Rounded lists (Writing, Notes, Projects), like Google Account pages ── */
   .block {
     margin-top: 64px;
   }
 
-  .latest {
-    position: relative;
-    display: block;
-    margin-bottom: 8px;
-    padding: 22px 24px;
-    border: 1px solid var(--line);
-    border-radius: var(--radius);
+  .rows {
+    margin: 0;
+    padding: 8px;
+    list-style: none;
+    border-radius: 24px;
     background: var(--card);
+  }
+
+  .rows li + li {
+    border-top: 1px solid var(--surface-2);
+  }
+
+  .rows a {
+    display: grid;
+    grid-template-columns: 40px minmax(0, 1fr) auto;
+    align-items: start;
+    gap: 16px;
+    padding: 14px 16px;
+    border-radius: 16px;
     text-decoration: none;
-    overflow: hidden;
-    transition:
-      border-color 0.2s,
-      transform 0.2s var(--ease);
+    transition: background-color 0.2s;
   }
 
-  .latest::before {
-    content: '';
-    position: absolute;
-    inset: 0 auto 0 0;
-    width: 4px;
-    background: var(--accent);
-  }
-
-  .latest:hover {
+  .rows a:hover {
     color: inherit;
-    border-color: var(--accent);
-    transform: translateY(-2px);
+    background: color-mix(in srgb, var(--text) 6%, transparent);
   }
 
-  .kicker {
-    font-family: var(--mono);
-    font-size: 11px;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
-    color: var(--accent);
+  .lead {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    color: var(--on-accent-soft);
   }
 
-  :global(html[data-mode='personal']) .kicker {
-    font-family: var(--hand);
-    font-size: 20px;
-    letter-spacing: 0;
-    text-transform: none;
-  }
-
-  .latest h3 {
-    margin: 6px 0 6px;
-    font-size: 22px;
-  }
-
-  .latest p {
-    margin: 0 0 12px;
-    color: var(--muted);
-    font-size: 15.5px;
-  }
-
-  .latest-meta {
+  .row-body {
     display: flex;
-    gap: 12px;
-    font-family: var(--sans);
-    font-size: 13px;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
+  .row-title {
+    font-size: 16px;
+    font-weight: 500;
+    line-height: 1.5;
+    color: var(--text);
+  }
+
+  .row-desc {
+    font-size: 14px;
+    line-height: 1.5;
     color: var(--muted);
   }
 
-  .read {
-    margin-left: auto;
-    color: var(--accent);
+  .rows time {
+    padding-top: 2px;
+    font-size: 13px;
     font-weight: 500;
+    color: var(--muted);
+    white-space: nowrap;
   }
 
-  .more {
-    display: inline-block;
-    margin-top: 14px;
-    font-family: var(--sans);
-    font-size: 14px;
-    color: var(--accent);
-    text-decoration: none;
+  .new {
+    display: inline-flex;
+    align-items: center;
+    height: 20px;
+    margin-left: 8px;
+    padding: 0 8px;
+    border-radius: 999px;
+    background: var(--accent);
+    color: var(--on-accent);
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    vertical-align: 2px;
+  }
+
+  .row-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--muted);
+  }
+
+  .chip.tonal {
+    border-color: transparent;
+    background: var(--tonal);
+    color: var(--on-tonal);
+  }
+
+  .trail {
+    padding-top: 10px;
+    color: var(--muted);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .rows a:hover .trail {
+    opacity: 1;
   }
 
   .empty {
     color: var(--muted);
   }
 
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(2, minmax(0, 1fr));
-    gap: 14px;
-  }
-
+  /* ── Phones ── */
   @media (max-width: 640px) {
     .hero {
       grid-template-columns: 1fr;
@@ -535,25 +671,22 @@ const per = profiles.personal;
     }
     .portrait {
       order: -1;
-      width: 160px;
-      margin-left: 6px;
+      width: 170px;
     }
-    .toolbox {
-      flex-direction: column;
-      gap: 8px;
-    }
-    .grid {
+    .now-list {
       grid-template-columns: 1fr;
     }
-    .now dl {
-      grid-template-columns: 1fr;
-      gap: 10px;
+    .rows a {
+      grid-template-columns: 40px minmax(0, 1fr);
+      gap: 12px;
+      padding: 12px;
     }
-    .now {
-      padding: 22px 20px 16px;
+    .rows time {
+      grid-column: 2;
+      padding-top: 0;
     }
-    .latest {
-      padding: 18px 18px 18px 22px;
+    .trail {
+      display: none;
     }
   }
 </style>

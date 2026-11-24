@@ -3,10 +3,9 @@
    so flipping the toggle changes the mood, not just the text. */
 
 :root {
-  --sans: 'IBM Plex Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --serif: 'Newsreader', ui-serif, Georgia, 'Times New Roman', serif;
-  --mono: 'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
-  --hand: 'Caveat', 'Bradley Hand', cursive;
+  --sans: 'Google Sans', ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: 'Google Sans Code', ui-monospace, 'SF Mono', Menlo, monospace;
+  --hand: 'Caveat', 'Bradley Hand', cursive; /* polaroid caption */
 
   --text: #1c1b19;
   --muted: #6d6a64;
@@ -18,25 +17,48 @@
   color-scheme: light;
 }
 
+/* Professional: a Material-style tonal palette built from a green seed.
+   Names in comments are the Material 3 roles each token plays. */
 html[data-mode='professional'] {
-  --bg: #f7f8f5;
-  --accent: #1d6b50;
-  --accent-soft: #e1efe7;
+  --bg: #f6fbf6; /* surface */
+  --text: #171d1a; /* on-surface */
+  --muted: #404944; /* on-surface-variant */
+  --line: #bfc9c2; /* outline-variant */
+  --outline: #707974; /* outline */
+  --card: #f0f5f0; /* surface-container-low */
+  --surface-1: #eaefea; /* surface-container */
+  --surface-2: #e2e8e3; /* surface-container-high */
+  --accent: #1b6b4f; /* primary */
+  --on-accent: #ffffff; /* on-primary */
+  --accent-soft: #a6f2cf; /* primary-container */
+  --on-accent-soft: #002116; /* on-primary-container */
+  --tonal: #cfe9dc; /* secondary-container */
+  --on-tonal: #0b1f17; /* on-secondary-container */
   --font-body: var(--sans);
   --font-display: var(--sans);
-  --display-weight: 600;
-  --display-tracking: -0.02em;
+  --display-weight: 400;
+  --display-tracking: -0.01em;
 }
 
+/* Personal: the same Material roles, from a warm terracotta seed. */
 html[data-mode='personal'] {
-  --bg: #f7f2e9;
-  --card: #fffdf8;
-  --line: #e7dfd1;
-  --accent: #a94e27;
-  --accent-soft: #f6e4d8;
-  --font-body: var(--serif);
-  --font-display: var(--serif);
-  --display-weight: 500;
+  --bg: #fff8f5; /* surface */
+  --text: #231a16; /* on-surface */
+  --muted: #53433d; /* on-surface-variant */
+  --line: #d8c2b9; /* outline-variant */
+  --outline: #85736c; /* outline */
+  --card: #fff1ec; /* surface-container-low */
+  --surface-1: #fbeae3; /* surface-container */
+  --surface-2: #f3dfd7; /* surface-container-high */
+  --accent: #9a4521; /* primary */
+  --on-accent: #ffffff; /* on-primary */
+  --accent-soft: #ffdbcd; /* primary-container */
+  --on-accent-soft: #360f00; /* on-primary-container */
+  --tonal: #ffdbcd; /* secondary-container */
+  --on-tonal: #2c160c; /* on-secondary-container */
+  --font-body: var(--sans);
+  --font-display: var(--sans);
+  --display-weight: 400;
   --display-tracking: -0.01em;
 }
 
@@ -49,16 +71,36 @@ html[data-mode='personal'] {
     color-scheme: dark;
   }
   html[data-mode='professional'] {
-    --bg: #0f1311;
-    --accent: #79c7a3;
-    --accent-soft: #173029;
+    --bg: #0f1512;
+    --text: #dee4df;
+    --muted: #bfc9c2;
+    --line: #404944;
+    --outline: #89938d;
+    --card: #171d1a;
+    --surface-1: #1b211e;
+    --surface-2: #252b28;
+    --accent: #8bd6b4;
+    --on-accent: #003827;
+    --accent-soft: #005139;
+    --on-accent-soft: #a6f2cf;
+    --tonal: #344c41;
+    --on-tonal: #cfe9dc;
   }
   html[data-mode='personal'] {
-    --bg: #15120e;
-    --card: #1e1a15;
-    --line: #2f2922;
-    --accent: #e3926a;
-    --accent-soft: #3a2519;
+    --bg: #1a110e;
+    --text: #f1dfd8;
+    --muted: #d8c2b9;
+    --line: #53433d;
+    --outline: #a08d85;
+    --card: #231a16;
+    --surface-1: #271e1a;
+    --surface-2: #322824;
+    --accent: #ffb596;
+    --on-accent: #571f04;
+    --accent-soft: #763519;
+    --on-accent-soft: #ffdbcd;
+    --tonal: #5d4035;
+    --on-tonal: #ffdbcd;
   }
 }
 
@@ -89,66 +131,6 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
-}
-
-html[data-mode='personal'] body {
-  font-size: 19px;
-}
-
-/* ── Backdrops ──
-   Professional: a faint dot grid with a cool glow, fading out down the page.
-   Personal: a sunset glow (borrowed from the photo) over light paper grain. */
-body::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 820px;
-  z-index: -1;
-  pointer-events: none;
-  transition: opacity 0.5s var(--ease);
-}
-
-html[data-mode='professional'] body::before {
-  background-image:
-    radial-gradient(560px 320px at 82% 60px, var(--glow-a), transparent 70%),
-    radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
-  background-size:
-    auto,
-    22px 22px;
-  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
-  mask-image: linear-gradient(to bottom, #000 30%, transparent);
-}
-
-html[data-mode='personal'] body::before {
-  background-image:
-    radial-gradient(620px 360px at 85% 0, var(--glow-a), transparent 70%),
-    radial-gradient(520px 300px at 8% 40px, var(--glow-b), transparent 70%);
-}
-
-html[data-mode='personal'] body {
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.05'/%3E%3C/svg%3E");
-}
-
-html[data-mode='professional'] {
-  --dot: rgba(28, 27, 25, 0.13);
-  --glow-a: rgba(29, 107, 80, 0.12);
-}
-html[data-mode='personal'] {
-  --glow-a: rgba(255, 158, 102, 0.32);
-  --glow-b: rgba(236, 132, 160, 0.2);
-}
-
-@media (prefers-color-scheme: dark) {
-  html[data-mode='professional'] {
-    --dot: rgba(235, 232, 226, 0.1);
-    --glow-a: rgba(121, 199, 163, 0.12);
-  }
-  html[data-mode='personal'] {
-    --glow-a: rgba(227, 146, 106, 0.16);
-    --glow-b: rgba(200, 100, 130, 0.1);
-  }
 }
 
 a {
@@ -209,4 +191,22 @@ img {
     transition: none !important;
     animation: none !important;
   }
+}
+
+/* ── Material Symbols (icon font; only a few icons are loaded) ── */
+.msr {
+  display: inline-block;
+  font-family: 'Material Symbols Rounded';
+  font-weight: normal;
+  font-style: normal;
+  font-size: 20px;
+  line-height: 1;
+  letter-spacing: normal;
+  text-transform: none;
+  white-space: nowrap;
+  direction: ltr;
+  font-feature-settings: 'liga';
+  -webkit-font-smoothing: antialiased;
+  font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+  user-select: none;
 }
