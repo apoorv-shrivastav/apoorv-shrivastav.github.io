@@ -133,6 +133,40 @@ body {
   transition: background-color 0.35s var(--ease), color 0.35s var(--ease);
 }
 
+/* ── Professional backdrop ──
+   A faint dot grid with a soft green glow behind the hero, fading out
+   down the page. The personal side stays flat. */
+html[data-mode='professional'] body::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 820px;
+  z-index: -1;
+  pointer-events: none;
+  background-image:
+    radial-gradient(560px 320px at 82% 60px, var(--glow), transparent 70%),
+    radial-gradient(circle at 1px 1px, var(--dot) 1px, transparent 0);
+  background-size:
+    auto,
+    22px 22px;
+  -webkit-mask-image: linear-gradient(to bottom, #000 30%, transparent);
+  mask-image: linear-gradient(to bottom, #000 30%, transparent);
+}
+
+html[data-mode='professional'] {
+  --dot: rgba(23, 29, 26, 0.13);
+  --glow: rgba(27, 107, 79, 0.14);
+}
+
+@media (prefers-color-scheme: dark) {
+  html[data-mode='professional'] {
+    --dot: rgba(222, 228, 223, 0.1);
+    --glow: rgba(139, 214, 180, 0.12);
+  }
+}
+
 a {
   color: inherit;
   text-decoration-color: color-mix(in srgb, currentColor 30%, transparent);
