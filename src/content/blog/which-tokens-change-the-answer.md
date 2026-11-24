@@ -1,7 +1,7 @@
 ---
 title: "Which tokens actually change the answer?"
 description: "A priority order for cutting LLM cost, a one-line caching fix, and the context metrics almost nobody tracks."
-date: 2027-01-18
+date: 2026-12-14
 mode: professional
 ---
 

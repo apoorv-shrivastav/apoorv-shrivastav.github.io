@@ -1,7 +1,7 @@
 ---
 title: "When a knowledge graph is the right answer (and when it isn't)"
 description: "Graphs answer one kind of question that tables and document search both handle badly. How to tell if your problem is that kind."
-date: 2027-02-01
+date: 2026-12-28
 mode: professional
 ---
 

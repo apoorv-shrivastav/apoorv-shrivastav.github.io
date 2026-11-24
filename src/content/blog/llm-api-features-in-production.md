@@ -1,7 +1,7 @@
 ---
 title: "The LLM API features that matter in production"
 description: "Tool calls, structured outputs, streaming and prompt caching: what each one does, and the gotchas that show up once real users arrive."
-date: 2026-11-30
+date: 2026-10-12
 mode: professional
 ---
 

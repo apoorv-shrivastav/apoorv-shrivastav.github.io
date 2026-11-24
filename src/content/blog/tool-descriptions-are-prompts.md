@@ -1,7 +1,7 @@
 ---
 title: "Tool descriptions are prompts, and so are error messages"
 description: "Most unreliable agents have a tool problem, not a prompt problem. How to design tools, errors and retries an agent can actually work with."
-date: 2026-12-21
+date: 2026-11-02
 mode: professional
 ---
 

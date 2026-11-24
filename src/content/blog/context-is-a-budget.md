@@ -1,7 +1,7 @@
 ---
 title: "Context is a budget, not a bucket"
 description: "Treating the context window as a scarce resource makes isolation, offloading, ordering and trust obvious design concerns."
-date: 2027-01-04
+date: 2026-11-30
 mode: professional
 ---
 
