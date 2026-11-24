@@ -18,7 +18,7 @@ const per = profiles.personal;
   <section class="hero">
     <div class="intro">
       <p class="eyebrow" data-show="professional" data-fade>
-        <span class="pulse" aria-hidden="true"></span>{pro.tagline}
+        <span class="glyph" aria-hidden="true">⚙︎</span>{pro.tagline}
       </p>
       <p class="eyebrow" data-show="personal" data-fade>
         <span aria-hidden="true">✦</span>
@@ -172,12 +172,10 @@ const per = profiles.personal;
     font-weight: 400;
   }
 
-  .pulse {
-    width: 8px;
-    height: 8px;
-    border-radius: 50%;
-    background: var(--accent);
-    box-shadow: 0 0 0 4px var(--accent-soft);
+  .glyph {
+    font-family: var(--sans);
+    font-size: 15px;
+    line-height: 1;
   }
 
   h1 {
