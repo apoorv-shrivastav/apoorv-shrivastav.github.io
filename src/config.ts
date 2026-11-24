@@ -37,6 +37,7 @@ type Profile = {
   photoBadge?: string; // small label on the professional photo
   photoCaption?: string; // handwritten caption on the polaroid
   switchHint: string; // the little "flip to the other side" link
+  now?: { label: string; value: string }[]; // the "Now" card
 };
 
 export const profiles: Record<Mode, Profile> = {
@@ -59,11 +60,16 @@ export const profiles: Record<Mode, Profile> = {
     photo: 'images/photo.jpg',
     photoCaption: 'Golden Gate, SF',
     switchHint: '← back to the work stuff',
-    tagline: 'Bay Area. Curious about most things.',
+    tagline: 'Hopeless wanderer. Bay Area since 2021.',
     bio: [
-      // ✏️ Replace these two lines with something that sounds like you off the clock.
       'This is the personal side: what I read, where I wander, and whatever I’m thinking about when I’m not building things.',
-      'Swap this paragraph for a line or two about your life outside work: hobbies, places, books, food, anything.',
+      'I grew up in India and moved to the Bay Area in December 2021. A good weekend is a drive with nowhere to be, a trail I haven’t done yet, and ending up somewhere with good music and food. I also play cricket, football and table tennis, and this winter I’m learning to snowboard.',
+    ],
+    // The "Now" card. Update it whenever these change.
+    now: [
+      { label: 'Watching', value: 'Every F1 race of the season' },
+      { label: 'Listening to', value: 'Podcasts about physical AI' },
+      { label: 'Looking forward to', value: 'Snowboarding season' },
     ],
     writingTitle: 'Notes',
   },
