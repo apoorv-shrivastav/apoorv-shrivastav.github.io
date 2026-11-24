@@ -46,8 +46,8 @@ export const profiles: Record<Mode, Profile> = {
     photoBadge: 'Bay Area, CA',
     tagline: 'Senior Data Scientist & AI Engineer',
     bio: [
-      'I build at the intersection of data, AI systems, and workflow automation, helping teams move beyond AI demos to systems that hold up in production.',
-      'Lately that means integrating LLMs into real data pipelines, evaluating model outputs rigorously, and designing agentic systems that are useful and reliable. I care less about any single tool and more about making sound judgment calls and shipping.',
+      'I’m a data scientist who ended up building AI systems. These days that mostly means getting LLMs to behave in production: plugging them into real data pipelines, checking their answers properly, and building agents that do something useful without falling over.',
+      'I mostly work in Python and SQL, with some TypeScript when a project needs a front end. I write here about what I’m learning, mostly evals, retrieval and agents.',
     ],
     focus: ['AI systems in production', 'LLM evaluation', 'Agentic workflows', 'RAG', 'Context engineering'],
     toolbox: ['Python', 'SQL', 'TypeScript', 'React', 'LangGraph', 'OpenAI & Anthropic APIs', 'AWS'],
