@@ -1,7 +1,7 @@
 ---
 title: "Why naive RAG breaks, and how to fix it"
 description: "Most RAG failures happen before the model sees anything. A tour of chunking, hybrid search, reranking and query rewriting."
-date: 2026-11-30
+date: 2026-11-16
 mode: professional
 ---
 
