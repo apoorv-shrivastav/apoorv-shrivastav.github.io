@@ -44,9 +44,9 @@ type Profile = {
 export const profiles: Record<Mode, Profile> = {
   professional: {
     label: 'Professional',
-    photo: 'images/photo.jpg',
+    photo: 'images/headshot.jpg',
     photoBadge: 'Bay Area, CA',
-    tagline: 'Senior Data Scientist & AI Engineer',
+    tagline: 'Senior Data Scientist building production AI systems',
     bio: [
       'I’m a data scientist who ended up building AI systems. These days that mostly means getting LLMs to behave in production: plugging them into real data pipelines, checking their answers properly, and building agents that do something useful without falling over.',
       'I mostly work in Python and SQL, with some TypeScript when a project needs a front end. I write here about what I’m learning, mostly evals, retrieval and agents.',
