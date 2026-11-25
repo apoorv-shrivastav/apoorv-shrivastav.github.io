@@ -26,9 +26,9 @@ export const projects: Project[] = [
     title: 'Pramatix',
     description:
       'Agentic experimentation platform for AI features: Designer, Analyst, Critic and Communicator agents with real statistical depth.',
-    href: 'https://agentic-experimentation-platform.vercel.app',
+    href: 'https://github.com/apoorv-shrivastav/agentic-experimentation-platform',
     stack: 'Python',
-    tag: 'Live demo',
+    tag: 'Prototype',
   },
   {
     title: 'polycode',
