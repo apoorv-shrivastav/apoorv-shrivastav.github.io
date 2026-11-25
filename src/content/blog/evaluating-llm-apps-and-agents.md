@@ -1,7 +1,7 @@
 ---
 title: "Eight habits for evaluating LLM apps and agents"
 description: "Read the traces first, let code grade what it can, test your judges, and put error bars on everything."
-date: 2026-11-16
+date: 2026-10-19
 mode: professional
 featured: true
 ---

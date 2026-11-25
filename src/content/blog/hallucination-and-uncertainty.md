@@ -1,7 +1,7 @@
 ---
 title: "How to tell when a model is making things up"
 description: "Detecting hallucinations, measuring whether a model knows when it's unsure, and checking that citations really support the claim."
-date: 2026-11-09
+date: 2026-10-12
 mode: professional
 ---
 

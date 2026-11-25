@@ -1,7 +1,7 @@
 ---
 title: "Agent memory: default to forgetting"
 description: "Memory is a cost, not a feature. How to decide what an agent keeps, in what form, and who gets to write it."
-date: 2026-12-07
+date: 2026-11-09
 mode: professional
 ---
 

@@ -1,7 +1,7 @@
 ---
 title: "Agents over tables vs agents over documents"
 description: "A text-to-SQL agent and a document agent look alike from the outside. Underneath, they need almost opposite designs."
-date: 2026-12-21
+date: 2026-11-23
 mode: professional
 ---
 

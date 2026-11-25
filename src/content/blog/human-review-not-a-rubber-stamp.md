@@ -1,7 +1,7 @@
 ---
 title: "Human review that isn't a rubber stamp"
 description: "Putting a person in the loop only works if they actually read what they approve. How to design approvals, handoffs and the flows around them."
-date: 2027-01-11
+date: 2026-12-14
 mode: professional
 ---
 

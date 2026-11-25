@@ -1,7 +1,7 @@
 ---
 title: "When the eval becomes the reward"
 description: "RLHF, DPO, GRPO and verifiable rewards, explained for people who build graders."
-date: 2027-01-04
+date: 2026-12-07
 mode: professional
 ---
 

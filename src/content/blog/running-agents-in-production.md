@@ -1,7 +1,7 @@
 ---
 title: "Running agents in production: traces, migrations and rollouts"
 description: "How to debug something that happened once, survive your model being retired, and ship changes to a system whose outputs are supposed to vary."
-date: 2027-01-18
+date: 2026-12-21
 mode: professional
 ---
 

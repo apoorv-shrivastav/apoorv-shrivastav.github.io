@@ -1,7 +1,7 @@
 ---
 title: "Agent loops, and how they fail"
 description: "ReAct, plan-and-execute, reflection and routers, plus the ways long agent runs go wrong and how to debug them."
-date: 2026-10-26
+date: 2026-09-28
 mode: professional
 ---
 

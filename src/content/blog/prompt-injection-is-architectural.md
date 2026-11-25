@@ -1,7 +1,7 @@
 ---
 title: "You can't prompt your way out of prompt injection"
 description: "Why agent security is an architecture problem, the three conditions that make an agent exploitable, and the defenses that actually hold."
-date: 2026-11-23
+date: 2026-10-26
 mode: professional
 ---
 
