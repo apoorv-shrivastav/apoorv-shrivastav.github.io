@@ -1,7 +1,7 @@
 ---
 title: "When the eval becomes the reward"
 description: "RLHF, DPO, GRPO and verifiable rewards, explained for people who build graders."
-date: 2026-12-07
+date: 2026-12-14
 mode: professional
 ---
 
@@ -9,7 +9,7 @@ If you work on evals, you build a lot of graders: checks that look at a model's 
 
 Looking at how models are post-trained changes that picture. The same kind of grader that scores an output in an eval can reward it during training. Once that happens, the line between "evaluating a model" and "training a model" gets thin, and the quality of the grader matters a lot more.
 
-This post is a map of how the pieces fit together, written from the eval side rather than the model-training side.
+This post is a map of how the pieces fit together, written from the eval side rather than the model-training side. For a step-by-step walk through the training pipeline itself, see [How a base model becomes an assistant](/blog/how-post-training-works/).
 
 ## The rough pipeline
 
